@@ -10,7 +10,7 @@ from wallabot.models import Item
 EXAMPLE = Path(__file__).resolve().parent.parent / "busquedas.example.toml"
 
 
-def item(title, price=180, description="", **kw):
+def item(title, price=300, description="", **kw):
     return Item(id=title, title=title, description=description, price=price, **kw)
 
 
@@ -45,12 +45,14 @@ class ExampleConfigTest(unittest.TestCase):
         self.assertAccepted(item("Gigabyte GeForce RTX3060 Gaming OC 12G"))
         self.assertAccepted(item("Tarjeta gráfica RTX 3060 12 GB con caja original"))
         self.assertAccepted(item("Nvidia RTX 3060", description="Versión de 12gb, funciona perfecta"))
+        self.assertAccepted(item("Tarjeta Gráfica RTX 3060 DE 12GB con Ventilador"))
 
     def test_boxes_and_accessories(self):
-        self.assertRejected(item("Caja RTX 3060 12GB", price=15))
-        self.assertRejected(item("Caja vacía RTX 3060 12GB", price=120))
-        self.assertRejected(item("RTX 3060 12GB", price=130, description="Vendo solo la caja, sin gráfica"))
-        self.assertRejected(item("Backplate RTX 3060 12GB", price=130))
+        self.assertRejected(item("Caja RTX 3060 12GB"))
+        self.assertRejected(item("Caja vacía RTX 3060 12GB", price=250))
+        self.assertRejected(item("RTX 3060 12GB", price=250, description="Vendo solo la caja, sin gráfica"))
+        self.assertRejected(item("Backplate RTX 3060 12GB"))
+        self.assertRejected(item("Ventiladores para RTX 3060 12GB"))
 
     def test_other_variants(self):
         self.assertRejected(item("RTX 3060 8GB"))
@@ -60,7 +62,7 @@ class ExampleConfigTest(unittest.TestCase):
         self.assertRejected(item("RTX 3070 / 3060 12GB"))
 
     def test_full_pcs(self):
-        self.assertRejected(item("PC Gaming RTX 3060 12GB Ryzen 5 5600", price=200))
+        self.assertRejected(item("PC Gaming RTX 3060 12GB Ryzen 5 5600", price=300))
         self.assertRejected(item("Ordenador gaming i5 3060 12gb", price=200))
         self.assertRejected(item("Portátil MSI RTX 3060", price=230))
         self.assertRejected(item("Torre gamer 3060 12GB 16GB RAM", price=230))
@@ -72,7 +74,7 @@ class ExampleConfigTest(unittest.TestCase):
 
     def test_price_range(self):
         self.assertRejected(item("RTX 3060 12GB", price=60))
-        self.assertRejected(item("RTX 3060 12GB", price=400))
+        self.assertRejected(item("RTX 3060 12GB", price=550))
 
 
 class RulesTest(unittest.TestCase):

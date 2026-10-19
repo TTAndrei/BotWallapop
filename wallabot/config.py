@@ -24,7 +24,7 @@ class Search:
     distance_km: float | None = None
     category_id: int | None = None
     order_by: str = "newest"
-    max_pages: int = 5
+    max_pages: int = 15
 
 
 _RULE_KEYS = {f.name for f in fields(Rules)}

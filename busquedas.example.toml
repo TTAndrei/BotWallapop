@@ -11,7 +11,7 @@ latitude = 40.4168        # tu ubicación (por defecto Madrid)
 longitude = -3.7038
 # distance_km = 100       # sin esto busca en toda España
 order_by = "newest"       # newest | price_low_to_high | price_high_to_low | closest | most_relevance
-max_pages = 5             # páginas de resultados a revisar en cada búsqueda
+max_pages = 15            # páginas de resultados (de hasta 15 anuncios) a revisar
 include_reserved = false  # ignora los reservados
 # shipping_only = true    # solo anuncios con envío
 # max_age_days = 30       # ignora anuncios de hace más de N días
@@ -23,8 +23,8 @@ query = "rtx 3060 12gb"
 
 # Precio: lo más eficaz contra cajas, cables y gangas falsas. También se manda a
 # Wallapop, así que las páginas no se gastan en anuncios de 10 €.
-min_price = 110
-max_price = 240
+min_price = 200
+max_price = 400
 
 # Obligatorio en el TÍTULO (cada elemento debe aparecer; una lista interna = alternativas).
 require = ["3060"]
@@ -38,11 +38,12 @@ exclude_title = [
     # Equipos completos
     "pc", "ordenador", "torre", "sobremesa", "equipo", "portatil", "laptop",
     "i3", "i5", "i7", "i9", "ryzen", "ram", "ssd", "monitor",
-    # Cajas y accesorios
-    "re:^ caja ", "solo caja", "caja vacia", "backplate", "disipador",
-    "ventilador", "ventiladores", "soporte", "cable", "bracket",
+    # Cajas y accesorios: solo si el título EMPIEZA por ellos, porque
+    # "RTX 3060 con caja" o "con ventilador" son anuncios buenos.
+    "re:^ (caja|backplate|disipador|ventiladore?s?|soporte|cable|bracket) ",
+    "solo caja", "caja vacia",
     # Anuncios de gente que busca / cambia
-    "busco", "compro", "cambio",
+    "busco", "compro", "solo cambio",
     # Estropeadas
     "averiada", "rota", "para piezas", "no funciona", "reparar", "defectuosa",
 ]

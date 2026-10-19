@@ -21,7 +21,7 @@ Ejemplo de salida:
 Revisados 160 · interesantes 14 · descartados 146
    - título contiene «8gb»: 31
    - título contiene «pc»: 22
-   - precio bajo (< 110 €): 18
+   - título contiene «ti»: 9
    ...
 Precio mediano de lo interesante: 180 €  (🔥 = ≥15 % más barato)
 
@@ -51,11 +51,11 @@ está preparado para la RTX 3060 de 12 GB:
 [[search]]
 name = "RTX 3060 12GB"
 query = "rtx 3060 12gb"      # lo que se escribe en el buscador de Wallapop
-min_price = 110              # quita cajas, cables, "gangas" falsas
-max_price = 240
+min_price = 200              # quita cajas, cables, "gangas" falsas
+max_price = 400
 require = ["3060"]           # obligatorio en el título
 require_any = ["12gb"]       # obligatorio en título o descripción
-exclude_title = ["8gb", "ti", "pc", "ordenador", "torre", "re:^ caja ", "busco", ...]
+exclude_title = ["8gb", "ti", "pc", "ordenador", "torre", "busco", ...]
 exclude_any = ["solo caja", "averiada", "para piezas", ...]
 ```
 

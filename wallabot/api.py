@@ -51,7 +51,7 @@ class WallapopClient:
         max_price: float | None = None,
         category_id: int | None = None,
         order_by: str = "newest",
-        max_pages: int = 5,
+        max_pages: int = 15,
     ) -> Iterator[Item]:
         """Devuelve los anuncios página a página (sin duplicados)."""
         params: dict[str, Any] = {
@@ -80,8 +80,10 @@ class WallapopClient:
                 if item.id and item.id not in seen:
                     seen.add(item.id)
                     yield item
+            # Con filtro de precio Wallapop filtra cada página por separado, así que
+            # una página puede venir casi vacía y aun así haber más detrás.
             next_page = (data.get("meta") or {}).get("next_page") or next_header
-            if not raw_items or not next_page:
+            if not next_page:
                 break
             query = {"next_page": next_page, "source": "search_box"}
             time.sleep(self.delay)
