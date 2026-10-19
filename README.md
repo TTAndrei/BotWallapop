@@ -36,7 +36,7 @@ Opciones útiles:
 | Comando | Qué hace |
 |---|---|
 | `python -m wallabot buscar --descartados` | Lista también lo descartado y **por qué** (para afinar los filtros) |
-| `python -m wallabot buscar --html resultados.html` | Guarda una página con fotos para echar un vistazo rápido |
+| `python -m wallabot buscar --html resultados.html` | Guarda una página para **elegir ofertas y contactar** (ver abajo) |
 | `python -m wallabot buscar --orden fecha` | Ordena por más reciente en vez de por precio |
 | `python -m wallabot -n "RTX 3060 12GB" buscar` | Ejecuta solo esa búsqueda |
 | `python -m wallabot vigilar -i 10` | Repite cada 10 min y avisa **solo de anuncios nuevos** |
@@ -89,6 +89,22 @@ Lo que pongas en `[defaults]` se aplica a todas las búsquedas.
 **Consejo:** la primera vez lanza `buscar --descartados` y repasa los motivos. Si se
 cuela basura, añade la palabra a `exclude_title`; si se descarta algo bueno, mira qué
 término lo ha tirado y quítalo o hazlo más concreto.
+
+## Elegir ofertas y escribir a los vendedores
+
+`buscar --html resultados.html` genera una página (funciona bien en el móvil) donde:
+
+- Marcas **Me interesa** en las ofertas que te gustan y filtras por *Me interesan*,
+  *Por contactar* o *Contactadas*, o solo las de Cataluña.
+- **Copiar mensaje y abrir** copia el mensaje para el vendedor y abre el anuncio
+  (en el móvil se abre la app de Wallapop). Solo tienes que pegarlo en el chat y enviar.
+- El mensaje cambia según dónde esté el anuncio: si está fuera de tu zona pregunta
+  si lo puede enviar. Se configura en la sección `[mensaje]` de `busquedas.toml`
+  (también se puede editar en la propia página).
+
+El bot **no envía los mensajes él solo** a propósito: Wallapop no tiene una API pública
+para el chat, habría que darle tu usuario y contraseña, y los mensajes automáticos van
+contra sus condiciones de uso, así que te podrían bloquear la cuenta.
 
 ## Avisos en Telegram (opcional)
 

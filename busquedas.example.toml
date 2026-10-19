@@ -7,14 +7,23 @@
 
 # Valores comunes a todas las búsquedas (cada [[search]] los puede sobrescribir).
 [defaults]
-latitude = 40.4168        # tu ubicación (por defecto Madrid)
-longitude = -3.7038
+latitude = 41.3874        # tu ubicación (aquí, Barcelona)
+longitude = 2.1686
 # distance_km = 100       # sin esto busca en toda España
 order_by = "newest"       # newest | price_low_to_high | price_high_to_low | closest | most_relevance
 max_pages = 15            # páginas de resultados (de hasta 15 anuncios) a revisar
 include_reserved = false  # ignora los reservados
 # shipping_only = true    # solo anuncios con envío
 # max_age_days = 30       # ignora anuncios de hace más de N días
+
+
+# Mensaje que copia la página de resultados (--html) al pulsar "Copiar mensaje y abrir".
+# {titulo} y {precio} se cambian por los del anuncio.
+[mensaje]
+local = "¡Hola! Me interesa tu {titulo}. ¿Sigue disponible? Gracias."
+fuera = "¡Hola! Me interesa tu {titulo}. ¿Sigue disponible? Estoy en Cataluña, ¿podrías enviarla por Wallapop? Gracias."
+# Prefijos de código postal que cuentan como "tu zona" (08 Barcelona, 17 Girona, 25 Lleida, 43 Tarragona).
+zona_local = ["08", "17", "25", "43"]
 
 
 [[search]]

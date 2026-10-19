@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from wallabot.api import extract_items, parse_item
-from wallabot.config import load_searches
+from wallabot.config import Messages, load_messages, load_searches
 from wallabot.filters import ItemFilter, Rules, normalize
 from wallabot.models import Item
 
@@ -126,6 +126,23 @@ class ParseTest(unittest.TestCase):
         it = parse_item(extract_items(data)[0])
         self.assertEqual((it.id, it.price, it.image), ("7", 150.0, "m.jpg"))
         self.assertTrue(it.reserved)
+
+
+class MessagesTest(unittest.TestCase):
+    def test_shipping_question_only_outside_catalonia(self):
+        m = load_messages(EXAMPLE)
+        barcelona = item("MSI RTX 3060 12GB", postal_code="08001")
+        sevilla = item("Zotac RTX 3060 12GB", postal_code="41001")
+        portugal = item("ASUS RTX 3060 12GB", postal_code="08100", country="PT")
+        self.assertTrue(m.is_local(barcelona))
+        self.assertNotIn("envi", m.for_item(barcelona))
+        self.assertIn("MSI RTX 3060 12GB", m.for_item(barcelona))
+        self.assertIn("enviarla", m.for_item(sevilla))
+        self.assertFalse(m.is_local(portugal))
+
+    def test_placeholders(self):
+        m = Messages(local="{titulo} a {precio}")
+        self.assertEqual(m.for_item(item("RTX", price=250, postal_code="08001")), "RTX a 250 €")
 
 
 if __name__ == "__main__":

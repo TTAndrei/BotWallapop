@@ -15,11 +15,23 @@ class Item:
     currency: str = "EUR"
     url: str = ""
     city: str = ""
+    province: str = ""
+    postal_code: str = ""
+    country: str = "ES"
     reserved: bool = False
     shipping: bool = False
     image: str = ""
     created_at: datetime | None = None
     raw: dict = field(default_factory=dict, repr=False)
+
+    def place(self) -> str:
+        """Ciudad (provincia), y el país si no es España."""
+        place = self.city
+        if self.province and self.province != self.city:
+            place += f" ({self.province})"
+        if self.country and self.country != "ES":
+            place += f", {self.country}"
+        return place
 
     def price_str(self) -> str:
         if self.price is None:

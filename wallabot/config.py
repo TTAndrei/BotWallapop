@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import tomllib
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 
 from .api import ORDER_BY
 from .filters import Rules
+from .models import Item
 
 # Madrid, por si no se indica ubicación.
 DEFAULT_LATITUDE = 40.4168
@@ -59,3 +60,37 @@ def _build_search(entry: dict) -> Search:
     if search_args.get("order_by", "newest") not in ORDER_BY:
         raise ValueError(f"order_by debe ser uno de {ORDER_BY}")
     return Search(rules=Rules(**rule_args), **search_args)
+
+
+# Prefijos de código postal de Cataluña (Barcelona, Girona, Lleida, Tarragona).
+CATALONIA_POSTAL_PREFIXES = ["08", "17", "25", "43"]
+
+
+@dataclass
+class Messages:
+    """Mensaje para el vendedor. {titulo} y {precio} se sustituyen por los del anuncio."""
+
+    # Anuncios en tu zona: se puede quedar en mano.
+    local: str = "¡Hola! Me interesa tu {titulo}. ¿Sigue disponible? Gracias."
+    # Anuncios fuera de tu zona: se pregunta por el envío.
+    fuera: str = (
+        "¡Hola! Me interesa tu {titulo}. ¿Sigue disponible? "
+        "Estoy en Cataluña, ¿podrías enviarla por Wallapop? Gracias."
+    )
+    zona_local: list[str] = field(default_factory=lambda: list(CATALONIA_POSTAL_PREFIXES))
+
+    def is_local(self, item: Item) -> bool:
+        return item.country == "ES" and item.postal_code[:2] in self.zona_local
+
+    def for_item(self, item: Item) -> str:
+        template = self.local if self.is_local(item) else self.fuera
+        return template.replace("{titulo}", item.title).replace("{precio}", item.price_str())
+
+
+def load_messages(path: str | Path) -> Messages:
+    with open(path, "rb") as fh:
+        data = tomllib.load(fh).get("mensaje", {})
+    unknown = set(data) - {f.name for f in fields(Messages)}
+    if unknown:
+        raise ValueError(f"Claves desconocidas en [mensaje]: {sorted(unknown)}")
+    return Messages(**data)

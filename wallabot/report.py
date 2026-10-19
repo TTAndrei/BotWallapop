@@ -1,14 +1,21 @@
-"""Salida de resultados: consola y página HTML con fotos."""
+"""Salida de resultados: consola y página HTML para elegir ofertas y contactar."""
 
 from __future__ import annotations
 
+import base64
+import json
 import statistics
+import urllib.request
 from collections import Counter
 from dataclasses import dataclass, field
-from html import escape
+from datetime import datetime
+from pathlib import Path
 
-from .config import Search
+from .api import HEADERS
+from .config import Messages, Search
 from .models import Item
+
+TEMPLATE = Path(__file__).with_name("seleccion.html")
 
 # Un anuncio se marca como chollo si cuesta al menos un 15 % menos que la mediana.
 DEAL_RATIO = 0.85
@@ -38,7 +45,7 @@ class SearchResult:
 
 
 def item_line(item: Item, deal: bool = False) -> str:
-    extras = " · ".join(x for x in (item.city, "envío" if item.shipping else "") if x)
+    extras = " · ".join(x for x in (item.place(), "envío" if item.shipping else "") if x)
     flag = "🔥 " if deal else ""
     return f"  {item.price_str():>9}  {flag}{item.title}" + (f"  ({extras})" if extras else "") + f"\n             {item.url}"
 
@@ -63,38 +70,66 @@ def print_result(result: SearchResult, show_rejected: bool = False) -> None:
             print(f"  {item.price_str():>9}  {item.title}  ← {reason}")
 
 
-def write_html(results: list[SearchResult], path: str) -> None:
-    sections = []
-    for result in results:
-        cards = []
-        for item in result.accepted:
-            deal = ' <span class="deal">🔥 chollo</span>' if result.is_deal(item) else ""
-            img = f'<img src="{escape(item.image)}" alt="" loading="lazy">' if item.image else '<div class="noimg"></div>'
-            meta = " · ".join(x for x in (item.city, "envío" if item.shipping else "") if x)
-            cards.append(
-                f'<a class="card" href="{escape(item.url)}" target="_blank" rel="noopener">{img}'
-                f'<div class="body"><div class="price">{escape(item.price_str())}{deal}</div>'
-                f'<div class="title">{escape(item.title)}</div><div class="meta">{escape(meta)}</div></div></a>'
-            )
-        sections.append(
-            f"<h2>{escape(result.search.name)} <small>{len(result.accepted)} interesantes · "
-            f"{len(result.rejected)} descartados</small></h2><div class=\"grid\">{''.join(cards)}</div>"
+def write_html(
+    results: list[SearchResult],
+    path: str,
+    messages: Messages,
+    *,
+    standalone: bool = True,
+    embed_images: bool = False,
+) -> None:
+    """Página para elegir ofertas y contactar: copia el mensaje y abre el anuncio.
+
+    standalone=False omite <!doctype>/<head> (para incrustarla en otra página).
+    embed_images=True mete las fotos dentro del HTML para que se vea sin conexión.
+    """
+    data = {
+        "generated": datetime.now().strftime("%d/%m/%Y %H:%M"),
+        "messages": {"local": messages.local, "fuera": messages.fuera},
+        "searches": [
+            {
+                "name": r.search.name,
+                "median": r.median_price,
+                "rejected": len(r.rejected),
+                "items": [
+                    {
+                        "id": item.id,
+                        "title": item.title,
+                        "price": item.price_str(),
+                        "url": item.url,
+                        "image": _image_src(item, embed_images),
+                        "place": item.place(),
+                        "local": messages.is_local(item),
+                        "shipping": item.shipping,
+                        "deal": r.is_deal(item),
+                    }
+                    for item in r.accepted
+                ],
+            }
+            for r in results
+        ],
+    }
+    # "</" escapado para que ningún título pueda cerrar el <script>.
+    payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    page = TEMPLATE.read_text(encoding="utf-8").replace("/*__DATA__*/null", payload)
+    if standalone:
+        page = (
+            '<!doctype html>\n<html lang="es"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
+            f"</head><body>\n{page}\n</body></html>"
         )
-    html = f"""<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Resultados Wallapop</title>
-<style>
-:root {{ --bg:#f6f7f8; --card:#fff; --fg:#1d2327; --muted:#69737b; --accent:#13c1ac; }}
-@media (prefers-color-scheme: dark) {{ :root {{ --bg:#15191c; --card:#1f2529; --fg:#e8ecef; --muted:#9aa5ad; }} }}
-body {{ margin:0; padding:16px; font-family:system-ui,sans-serif; background:var(--bg); color:var(--fg); }}
-h2 small {{ color:var(--muted); font-weight:normal; font-size:.6em; }}
-.grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }}
-.card {{ background:var(--card); border-radius:10px; overflow:hidden; color:inherit; text-decoration:none; }}
-.card img, .noimg {{ width:100%; aspect-ratio:1; object-fit:cover; background:var(--muted); display:block; }}
-.body {{ padding:8px 10px; }}
-.price {{ font-weight:700; color:var(--accent); }}
-.deal {{ color:#e8590c; font-size:.85em; }}
-.meta {{ color:var(--muted); font-size:.85em; }}
-</style></head><body>{''.join(sections)}</body></html>"""
     with open(path, "w", encoding="utf-8") as fh:
-        fh.write(html)
+        fh.write(page)
+
+
+def _image_src(item: Item, embed: bool) -> str:
+    if not embed or not item.image:
+        return item.image
+    url = item.image.replace("pictureSize=W640", "pictureSize=W320")
+    try:
+        request = urllib.request.Request(url, headers={"User-Agent": HEADERS["User-Agent"]})
+        with urllib.request.urlopen(request, timeout=15) as response:
+            kind = response.headers.get_content_type() or "image/jpeg"
+            return f"data:{kind};base64,{base64.b64encode(response.read()).decode()}"
+    except OSError:
+        return ""

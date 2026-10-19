@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 
 from .api import WallapopClient, WallapopError
-from .config import Search, load_searches
+from .config import Search, load_messages, load_searches
 from .filters import ItemFilter
 from .notify import TelegramNotifier
 from .report import SearchResult, item_line, print_result, write_html
@@ -64,8 +64,8 @@ def cmd_search(args: argparse.Namespace) -> None:
         print_result(result, show_rejected=args.descartados)
         results.append(result)
     if args.html and results:
-        write_html(results, args.html)
-        print(f"\nPágina con fotos guardada en {args.html}")
+        write_html(results, args.html, load_messages(args.config))
+        print(f"\nPágina para elegir y contactar guardada en {args.html}")
 
 
 def cmd_watch(args: argparse.Namespace) -> None:
@@ -121,7 +121,7 @@ def main(argv: list[str] | None = None) -> None:
     p_search = sub.add_parser("buscar", help="busca una vez y muestra lo interesante")
     p_search.add_argument("--orden", choices=("precio", "fecha"), default="precio")
     p_search.add_argument("--descartados", action="store_true", help="lista también lo descartado y el motivo")
-    p_search.add_argument("--html", metavar="FICHERO", help="guarda una página con fotos de los resultados")
+    p_search.add_argument("--html", metavar="FICHERO", help="guarda una página con fotos para elegir ofertas y contactar a los vendedores")
     p_search.set_defaults(func=cmd_search)
 
     p_watch = sub.add_parser("vigilar", help="repite la búsqueda y avisa solo de anuncios nuevos")
