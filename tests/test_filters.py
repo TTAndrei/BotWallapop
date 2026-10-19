@@ -136,7 +136,7 @@ class MessagesTest(unittest.TestCase):
         portugal = item("ASUS RTX 3060 12GB", postal_code="08100", country="PT")
         self.assertTrue(m.is_local(barcelona))
         self.assertNotIn("envi", m.for_item(barcelona))
-        self.assertIn("MSI RTX 3060 12GB", m.for_item(barcelona))
+        self.assertIn("la gráfica", m.for_item(barcelona))
         self.assertIn("enviarla", m.for_item(sevilla))
         self.assertFalse(m.is_local(portugal))
 

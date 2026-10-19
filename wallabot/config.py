@@ -71,10 +71,10 @@ class Messages:
     """Mensaje para el vendedor. {titulo} y {precio} se sustituyen por los del anuncio."""
 
     # Anuncios en tu zona: se puede quedar en mano.
-    local: str = "Hola, me interesa tu {titulo}. Sigue disponible? Gracias"
+    local: str = "Hola, me interesa la gráfica. Sigue disponible? Gracias"
     # Anuncios fuera de tu zona: se pregunta por el envío.
     fuera: str = (
-        "Hola, me interesa tu {titulo}. Sigue disponible? "
+        "Hola, me interesa la gráfica. Sigue disponible? "
         "Estoy en Cataluña, podrías enviarla por Wallapop? Gracias"
     )
     zona_local: list[str] = field(default_factory=lambda: list(CATALONIA_POSTAL_PREFIXES))
