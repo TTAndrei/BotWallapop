@@ -61,6 +61,9 @@ details.msgs summary { cursor: pointer; font-weight: 700; }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .toggle { display: inline-flex; gap: 6px; align-items: center; }
 .toggle input { accent-color: var(--accent); }
+.range { display: inline-flex; gap: 6px; align-items: center; font-size: .88rem; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 10px; }
+.range input { font: inherit; width: 4.5em; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 6px; font-variant-numeric: tabular-nums; }
+.range .clear { font: inherit; font-size: .82rem; background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; padding: 0; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 14px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
@@ -117,6 +120,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   <div class="bar">
     <div class="seg" id="seg" role="group" aria-label="Qué ofertas mostrar"></div>
     <label class="toggle" for="only-local"><input type="checkbox" id="only-local"> Solo Cataluña</label>
+    <div class="range" role="group" aria-label="Precio">
+      <label for="price-min">Precio</label>
+      <input id="price-min" type="number" inputmode="numeric" min="0" step="5" placeholder="mín" aria-label="Precio mínimo en euros">
+      <span aria-hidden="true">–</span>
+      <input id="price-max" type="number" inputmode="numeric" min="0" step="5" placeholder="máx" aria-label="Precio máximo en euros">
+      <span>€</span>
+      <button type="button" class="clear" id="price-clear" hidden>quitar</button>
+    </div>
   </div>
 
   <main id="results"></main>
@@ -145,6 +156,31 @@ $("only-local").checked = onlyLocal;
 $("only-local").addEventListener("change", (e) => { onlyLocal = e.target.checked; store.set("onlyLocal", onlyLocal); render(); });
 
 const allItems = DATA.searches.flatMap((s) => s.items);
+const priceOf = (item) => parseFloat(item.price);
+
+// Filtro de precio: se guarda en este dispositivo.
+const priceMin = $("price-min"), priceMax = $("price-max"), priceClear = $("price-clear");
+const prices = allItems.map(priceOf).filter((p) => !Number.isNaN(p));
+if (prices.length) {
+  priceMin.placeholder = Math.floor(Math.min(...prices));
+  priceMax.placeholder = Math.ceil(Math.max(...prices));
+}
+priceMin.value = store.get("priceMin", "");
+priceMax.value = store.get("priceMax", "");
+function onPrice() {
+  store.set("priceMin", priceMin.value); store.set("priceMax", priceMax.value); render();
+}
+priceMin.addEventListener("input", onPrice);
+priceMax.addEventListener("input", onPrice);
+priceClear.addEventListener("click", () => { priceMin.value = ""; priceMax.value = ""; onPrice(); });
+
+function visible(item) {
+  if (onlyLocal && !item.local) return false;
+  const p = priceOf(item), lo = parseFloat(priceMin.value), hi = parseFloat(priceMax.value);
+  if (!Number.isNaN(lo) && !(p >= lo)) return false;
+  if (!Number.isNaN(hi) && !(p <= hi)) return false;
+  return true;
+}
 const total = allItems.length;
 $("heading").textContent = DATA.searches.map((s) => s.name).join(" · ") || "Cazador Wallapop";
 $("summary").textContent = `${total} ofertas tras filtrar · ` +
@@ -168,7 +204,7 @@ function renderSeg() {
   seg.replaceChildren(...VIEWS.map(([key, label, test]) => {
     const b = document.createElement("button");
     b.type = "button";
-    b.textContent = `${label} (${allItems.filter((i) => test(i) && (!onlyLocal || i.local)).length})`;
+    b.textContent = `${label} (${allItems.filter((i) => test(i) && visible(i)).length})`;
     b.setAttribute("aria-pressed", String(view === key));
     b.addEventListener("click", () => { view = key; store.set("view", view); render(); });
     return b;
@@ -240,9 +276,10 @@ function card(item) {
 
 function render() {
   renderSeg();
+  priceClear.hidden = !priceMin.value && !priceMax.value;
   const test = VIEWS.find(([key]) => key === view)[2];
   const sections = DATA.searches.map((s) => {
-    const items = s.items.filter((i) => test(i) && (!onlyLocal || i.local));
+    const items = s.items.filter((i) => test(i) && visible(i));
     const grid = el("div", { class: "grid" });
     grid.append(...items.map(card));
     return el("section", {},

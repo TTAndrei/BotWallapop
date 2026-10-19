@@ -95,7 +95,7 @@ término lo ha tirado y quítalo o hazlo más concreto.
 `buscar --html resultados.html` genera una página (funciona bien en el móvil) donde:
 
 - Marcas **Me interesa** en las ofertas que te gustan y filtras por *Me interesan*,
-  *Por contactar* o *Contactadas*, o solo las de Cataluña.
+  *Por contactar* o *Contactadas*, solo las de Cataluña o por rango de precio.
 - **Copiar mensaje y abrir** copia el mensaje para el vendedor y abre el anuncio
   (en el móvil se abre la app de Wallapop). Solo tienes que pegarlo en el chat y enviar.
 - El mensaje cambia según dónde esté el anuncio: si está fuera de tu zona pregunta
