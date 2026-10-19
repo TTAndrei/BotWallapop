@@ -20,8 +20,8 @@ include_reserved = false  # ignora los reservados
 # Mensaje que copia la página de resultados (--html) al pulsar "Copiar mensaje y abrir".
 # {titulo} y {precio} se cambian por los del anuncio.
 [mensaje]
-local = "¡Hola! Me interesa tu {titulo}. ¿Sigue disponible? Gracias."
-fuera = "¡Hola! Me interesa tu {titulo}. ¿Sigue disponible? Estoy en Cataluña, ¿podrías enviarla por Wallapop? Gracias."
+local = "Hola, me interesa tu {titulo}. Sigue disponible? Gracias"
+fuera = "Hola, me interesa tu {titulo}. Sigue disponible? Estoy en Cataluña, podrías enviarla por Wallapop? Gracias"
 # Prefijos de código postal que cuentan como "tu zona" (08 Barcelona, 17 Girona, 25 Lleida, 43 Tarragona).
 zona_local = ["08", "17", "25", "43"]
 
