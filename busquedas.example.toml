@@ -1,0 +1,64 @@
+# Copia este fichero a busquedas.toml y adáptalo.
+#
+# Cómo se comparan los textos: todo se pasa a minúsculas, sin tildes ni signos,
+# y las capacidades se unifican ("12 GB", "12GB", "12G", "12 gigas" -> "12gb").
+# Un término se busca como palabra completa: "ti" encuentra "3060 Ti" pero no "tienda".
+# Si un término empieza por "re:" es una expresión regular sobre ese texto normalizado.
+
+# Valores comunes a todas las búsquedas (cada [[search]] los puede sobrescribir).
+[defaults]
+latitude = 40.4168        # tu ubicación (por defecto Madrid)
+longitude = -3.7038
+# distance_km = 100       # sin esto busca en toda España
+order_by = "newest"       # newest | price_low_to_high | price_high_to_low | closest | most_relevance
+max_pages = 5             # páginas de resultados a revisar en cada búsqueda
+include_reserved = false  # ignora los reservados
+# shipping_only = true    # solo anuncios con envío
+# max_age_days = 30       # ignora anuncios de hace más de N días
+
+
+[[search]]
+name = "RTX 3060 12GB"
+query = "rtx 3060 12gb"
+
+# Precio: lo más eficaz contra cajas, cables y gangas falsas. También se manda a
+# Wallapop, así que las páginas no se gastan en anuncios de 10 €.
+min_price = 110
+max_price = 240
+
+# Obligatorio en el TÍTULO (cada elemento debe aparecer; una lista interna = alternativas).
+require = ["3060"]
+# Obligatorio en título O descripción: muchos ponen "RTX 3060" y el 12GB solo en el texto.
+require_any = ["12gb"]
+
+# Si el TÍTULO contiene cualquiera de esto, fuera.
+exclude_title = [
+    # Otras versiones / modelos
+    "8gb", "6gb", "ti", "3060ti", "3070", "3080", "3050",
+    # Equipos completos
+    "pc", "ordenador", "torre", "sobremesa", "equipo", "portatil", "laptop",
+    "i3", "i5", "i7", "i9", "ryzen", "ram", "ssd", "monitor",
+    # Cajas y accesorios
+    "re:^ caja ", "solo caja", "caja vacia", "backplate", "disipador",
+    "ventilador", "ventiladores", "soporte", "cable", "bracket",
+    # Anuncios de gente que busca / cambia
+    "busco", "compro", "cambio",
+    # Estropeadas
+    "averiada", "rota", "para piezas", "no funciona", "reparar", "defectuosa",
+]
+
+# Si el título O la descripción contienen cualquiera de esto, fuera.
+exclude_any = [
+    "solo caja", "solo la caja", "caja vacia", "sin grafica", "no incluye la grafica",
+    "averiada", "para piezas", "no da imagen", "artefactos",
+]
+
+
+# Otro ejemplo, desactívalo borrándolo o déjalo como plantilla.
+# [[search]]
+# name = "Steam Deck OLED"
+# query = "steam deck oled"
+# min_price = 300
+# max_price = 480
+# require = ["steam deck", "oled"]
+# exclude_title = ["funda", "dock", "busco", "compro", "lcd", "64gb"]
