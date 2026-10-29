@@ -64,6 +64,30 @@ exclude_any = [
 ]
 
 
+[[search]]
+name = "RTX 5060 Ti 16GB"
+# La RTX 5060 normal solo existe con 8 GB: con 16 GB solo hay 5060 Ti.
+# Se busca "5060 ti" a secas porque mucha gente no pone los 16GB en el título;
+# el filtro ya comprueba que aparezcan en el título o la descripción.
+query = "5060 ti"
+min_price = 400
+max_price = 1000
+require = ["5060"]
+require_any = ["16gb"]
+exclude_title = [
+    "8gb", "4060", "5070", "3060",
+    "pc", "ordenador", "torre", "sobremesa", "equipo", "portatil", "laptop",
+    "i3", "i5", "i7", "i9", "ryzen", "ram", "ssd", "monitor",
+    "re:^ (caja|backplate|disipador|ventiladore?s?|soporte|cable|bracket) ",
+    "solo caja", "caja vacia",
+    "busco", "compro", "solo cambio",
+    "averiada", "rota", "para piezas", "no funciona", "reparar", "defectuosa",
+]
+exclude_any = [
+    "solo caja", "solo la caja", "caja vacia", "sin grafica", "no incluye la grafica",
+    "averiada", "para piezas", "no da imagen", "artefactos",
+]
+
 # Otro ejemplo, desactívalo borrándolo o déjalo como plantilla.
 # [[search]]
 # name = "Steam Deck OLED"
