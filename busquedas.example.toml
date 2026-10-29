@@ -88,6 +88,50 @@ exclude_any = [
     "averiada", "para piezas", "no da imagen", "artefactos",
 ]
 
+
+[[search]]
+name = "RTX 3070 Ti"
+query = "3070 ti"
+min_price = 150
+max_price = 500
+require = ["3070", "ti"]   # "3070ti" también vale: se lee como "3070 ti"
+exclude_title = [
+    "3060", "3080", "4070",
+    "pc", "ordenador", "torre", "sobremesa", "equipo", "portatil", "laptop",
+    "i3", "i5", "i7", "i9", "ryzen", "ram", "ssd", "monitor",
+    "re:^ (caja|backplate|disipador|ventiladore?s?|soporte|cable|bracket) ",
+    "solo caja", "caja vacia",
+    "busco", "compro", "solo cambio",
+    "averiada", "rota", "para piezas", "no funciona", "reparar", "defectuosa",
+]
+exclude_any = [
+    "solo caja", "solo la caja", "caja vacia", "sin grafica", "no incluye la grafica",
+    "averiada", "para piezas", "no da imagen", "artefactos",
+]
+
+
+[[search]]
+name = "RX 9060 XT 16GB"
+# Existe con 8 y con 16 GB: se exige que el anuncio diga 16GB.
+query = "9060 xt"
+min_price = 250
+max_price = 800
+require = ["9060"]
+require_any = ["16gb"]
+exclude_title = [
+    "8gb", "9070", "7600", "7700",
+    "pc", "ordenador", "torre", "sobremesa", "equipo", "portatil", "laptop",
+    "i3", "i5", "i7", "i9", "ryzen", "ram", "ssd", "monitor",
+    "re:^ (caja|backplate|disipador|ventiladore?s?|soporte|cable|bracket) ",
+    "solo caja", "caja vacia",
+    "busco", "compro", "solo cambio",
+    "averiada", "rota", "para piezas", "no funciona", "reparar", "defectuosa",
+]
+exclude_any = [
+    "solo caja", "solo la caja", "caja vacia", "sin grafica", "no incluye la grafica",
+    "averiada", "para piezas", "no da imagen", "artefactos",
+]
+
 # Otro ejemplo, desactívalo borrándolo o déjalo como plantilla.
 # [[search]]
 # name = "Steam Deck OLED"
