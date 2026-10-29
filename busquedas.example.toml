@@ -132,6 +132,28 @@ exclude_any = [
     "averiada", "para piezas", "no da imagen", "artefactos",
 ]
 
+
+[[search]]
+name = "RX 7900 XT 20GB"
+# Se descarta la XTX (24 GB, más cara) para comparar solo la XT.
+query = "7900 xt"
+min_price = 400
+max_price = 900
+require = ["7900", "xt"]
+exclude_title = [
+    "xtx", "7800", "7700", "9070", "9060",
+    "pc", "ordenador", "torre", "sobremesa", "equipo", "portatil", "laptop",
+    "i3", "i5", "i7", "i9", "ryzen", "ram", "ssd", "monitor",
+    "re:^ (caja|backplate|disipador|ventiladore?s?|soporte|cable|bracket) ",
+    "solo caja", "caja vacia",
+    "busco", "compro", "solo cambio",
+    "averiada", "rota", "para piezas", "no funciona", "reparar", "defectuosa",
+]
+exclude_any = [
+    "solo caja", "solo la caja", "caja vacia", "sin grafica", "no incluye la grafica",
+    "averiada", "para piezas", "no da imagen", "artefactos",
+]
+
 # Otro ejemplo, desactívalo borrándolo o déjalo como plantilla.
 # [[search]]
 # name = "Steam Deck OLED"
